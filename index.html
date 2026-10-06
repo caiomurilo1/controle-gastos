@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Controle Obra - Caio e Larissa  </title>
+<title>Controle de Gastos</title>
 <style>
 :root{--bg:#f4f5f7;--card:#fff;--tx:#1b1f24;--mut:#6b7480;--bd:#e2e5ea;--ac:#1f4e79;--bad:#d64545;--ok:#2e7d42;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111418;--card:#1a1f26;--tx:#e8ebef;--mut:#8b95a1;--bd:#2a313b;--ac:#3b78b5;--bad:#ff6b6b;--ok:#3ec488}}
@@ -29,8 +29,8 @@ h2{font-size:20px;margin:0 0 4px;color:var(--ac)}
 .row>*{flex:1 1 150px}
 label{display:block;font-size:12px;color:var(--mut);margin-bottom:4px}
 input,select,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:10px;width:100%}
-button.pri{background:lab(52.46% -56.88 54.9);color:#fff;border:0;font-weight:600;cursor:pointer;width:auto;padding:12px 20px}
-    button.ghost{background:transparent;color:var(--bad);border:0;width:auto;padding:4px 6px;cursor:pointer}
+button.pri{background:var(--ac);color:#fff;border:0;font-weight:600;cursor:pointer;width:auto;padding:12px 20px}
+button.ghost{background:transparent;color:var(--bad);border:0;width:auto;padding:4px 6px;cursor:pointer}
 .mut{color:var(--mut);font-size:13px}
 #fb{margin-top:10px;font-size:14px;font-weight:600;min-height:20px}
 #fb.ok{color:var(--ok)}
@@ -57,6 +57,12 @@ td select{padding:4px 6px;font-size:12px;color:var(--mut);width:130px}
 .chip button{width:auto;background:transparent;color:var(--mut);border:0;padding:2px 8px;font-weight:600;font-size:16px;line-height:1;cursor:pointer}
 details summary{cursor:pointer;font-weight:600}
 .sub{font-weight:600;margin:16px 0 4px}
+#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
+#login .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:24px;max-width:320px;width:100%}
+#login h2{margin:0 0 14px;color:var(--ac)}
+#login input{margin-bottom:10px}
+#logerr{color:var(--bad);font-size:13px;min-height:18px;margin-top:4px}
+#appwrap{display:none}
 .ro .edit{display:none}
 .ro table th:nth-child(n+8),.ro table td:nth-child(n+8){display:none}
 .kpi[data-f]{cursor:pointer}
@@ -67,14 +73,26 @@ details summary{cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
+<div id="login">
+<div class="box">
+<h2>Controle de Gastos</h2>
+<label for="luser">Usuário</label>
+<input id="luser" autocomplete="off">
+<label for="lpass">Senha</label>
+<input id="lpass" type="password" autocomplete="off">
+<button type="button" class="pri" id="lbtn" style="width:100%">Entrar</button>
+<div id="logerr"></div>
+</div>
+</div>
+<div id="appwrap">
 <main>
-<div class="top"><h1>Controle Obra - Caio e Larissa</h1><span id="st"></span></div>
+<div class="top"><h1>Controle de Gastos</h1><span id="st"></span></div>
 
 <div class="card edit">
 <b>Novo pagamento</b>
 <div class="row" style="margin-top:10px">
 <div><label for="cat">Categoria</label><select id="cat"></select></div>
-<div style="max-width:100px"><label for="data">Data</label><input type="date" id="data"></div>
+<div><label for="data">Data</label><input type="date" id="data"></div>
 <div><label for="valor">Valor (R$)</label><input id="valor" type="text" inputmode="decimal" placeholder="0,00" autocomplete="off"></div>
 </div>
 <div class="row" style="margin-top:8px">
@@ -86,7 +104,7 @@ details summary{cursor:pointer;font-weight:600}
 <div><label for="forma">Forma</label><select id="forma"><option>Pix</option><option>Dinheiro</option><option>Cartão</option><option>Transferência</option><option>Boleto</option></select></div>
 </div>
 <div class="row" style="margin-top:8px"><div><label for="obs">Observação</label><input id="obs" placeholder="Opcional" autocomplete="off"></div></div>
-<div class="row" style="margin-top:12px"><button type="button" class="pri" id="add">Adicionar Pagamento</button></button><button type="button" class="ghost" id="cancelar" hidden style="border:1px solid var(--bd);color:var(--tx)">Cancelar edição</button></div>
+<div class="row" style="margin-top:12px"><button type="button" class="pri" id="add">Adicionar pagamento</button><button type="button" class="ghost" id="cancelar" hidden style="border:1px solid var(--bd);color:var(--tx)">Cancelar edição</button></div>
 <div id="fb"></div>
 </div>
 
@@ -138,6 +156,7 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card wrap" style="padding:0"><div id="tb"></div></div>
 </section>
 </main>
+</div>
 <div id="msg"></div>
 
 <script>
@@ -435,6 +454,27 @@ status(ro?"Ao vivo · somente leitura":"Somente neste aparelho");
 status(okStatus());
 })();
 
+</script>
+<script>
+(function(){
+var U="nossaobra",P="0407";
+var L=function(i){return document.getElementById(i)};
+function tentar(){
+if(L("luser").value.trim()===U&&L("lpass").value===P){
+try{localStorage.setItem("gastos-auth","1")}catch(e){}
+L("login").style.display="none";
+L("appwrap").style.display="block";
+}else{
+L("logerr").textContent="Usuário ou senha incorretos";
+}
+}
+L("lbtn").onclick=tentar;
+L("lpass").addEventListener("keydown",function(e){if(e.key==="Enter")tentar()});
+L("luser").addEventListener("keydown",function(e){if(e.key==="Enter")L("lpass").focus()});
+var ok=false;
+try{ok=localStorage.getItem("gastos-auth")==="1"}catch(e){}
+if(ok){L("login").style.display="none";L("appwrap").style.display="block"}
+})();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
