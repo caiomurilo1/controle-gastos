@@ -57,12 +57,7 @@ td select{padding:4px 6px;font-size:12px;color:var(--mut);width:130px}
 .chip button{width:auto;background:transparent;color:var(--mut);border:0;padding:2px 8px;font-weight:600;font-size:16px;line-height:1;cursor:pointer}
 details summary{cursor:pointer;font-weight:600}
 .sub{font-weight:600;margin:16px 0 4px}
-#login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px}
-#login .box{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:24px;max-width:320px;width:100%}
-#login h2{margin:0 0 14px;color:var(--ac)}
-#login input{margin-bottom:10px}
-#logerr{color:var(--bad);font-size:13px;min-height:18px;margin-top:4px}
-#appwrap{display:none}
+
 .ro .edit{display:none}
 .ro table th:nth-child(n+8),.ro table td:nth-child(n+8){display:none}
 .kpi[data-f]{cursor:pointer}
@@ -73,18 +68,6 @@ details summary{cursor:pointer;font-weight:600}
 </style>
 </head>
 <body>
-<div id="login">
-<div class="box">
-<h2>Controle de Gastos</h2>
-<label for="luser">Usuário</label>
-<input id="luser" autocomplete="off">
-<label for="lpass">Senha</label>
-<input id="lpass" type="password" autocomplete="off">
-<button type="button" class="pri" id="lbtn" style="width:100%">Entrar</button>
-<div id="logerr"></div>
-</div>
-</div>
-<div id="appwrap">
 <main>
 <div class="top"><h1>Controle de Gastos</h1><span id="st"></span></div>
 
@@ -156,7 +139,6 @@ details summary{cursor:pointer;font-weight:600}
 <div class="card wrap" style="padding:0"><div id="tb"></div></div>
 </section>
 </main>
-</div>
 <div id="msg"></div>
 
 <script>
@@ -454,27 +436,6 @@ status(ro?"Ao vivo · somente leitura":"Somente neste aparelho");
 status(okStatus());
 })();
 
-</script>
-<script>
-(function(){
-var U="nossaobra",P="0407";
-var L=function(i){return document.getElementById(i)};
-function tentar(){
-if(L("luser").value.trim()===U&&L("lpass").value===P){
-try{localStorage.setItem("gastos-auth","1")}catch(e){}
-L("login").style.display="none";
-L("appwrap").style.display="block";
-}else{
-L("logerr").textContent="Usuário ou senha incorretos";
-}
-}
-L("lbtn").onclick=tentar;
-L("lpass").addEventListener("keydown",function(e){if(e.key==="Enter")tentar()});
-L("luser").addEventListener("keydown",function(e){if(e.key==="Enter")L("lpass").focus()});
-var ok=false;
-try{ok=localStorage.getItem("gastos-auth")==="1"}catch(e){}
-if(ok){L("login").style.display="none";L("appwrap").style.display="block"}
-})();
 </script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
